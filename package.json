@@ -1,0 +1,60 @@
+{
+    "name": "sendlayer",
+    "version": "1.0.0",
+    "description": "SendLayer JavaScript SDK",
+    "main": "./dist/index.js",
+    "files": [
+        "dist/**/*"
+    ],
+    "directories": {
+        "dist": "./dist"
+    },
+    "types": "./dist/types/index.d.ts",
+    "sideEffects": false,
+    "scripts": {
+        "clean": "rm -rf dist",
+        "build": "npm run clean && tsc",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "lint": "eslint src/**/*.ts",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "keywords": [
+        "sendlayer",
+        "email",
+        "api",
+        "sdk",
+        "typescript",
+        "nodejs",
+        "send email",
+        "send email api",
+        "send email sdk",
+        "send email typescript",
+        "send email nodejs",
+        "send email api typescript",
+        "send email api nodejs",
+        "sendlayer sdk",
+        "sendlayer api",
+        "sendlayer typescript",
+        "sendlayer nodejs",
+        "sendlayer api typescript",
+        "sendlayer api nodejs"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/jest": "^29.5.14",
+        "@types/node": "^20.11.24",
+        "@typescript-eslint/eslint-plugin": "^7.1.0",
+        "@typescript-eslint/parser": "^7.1.0",
+        "eslint": "^8.57.0",
+        "jest": "^29.7.0",
+        "prettier": "^3.2.5",
+        "ts-jest": "^29.1.2",
+        "typescript": "^5.3.3"
+    },
+    "dependencies": {
+        "axios": "^1.6.7",
+        "dotenv": "^16.4.7"
+    }
+}

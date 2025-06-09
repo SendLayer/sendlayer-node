@@ -1,14 +1,15 @@
-import { NewEmail } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 import { config } from 'dotenv';
 
 config();
 
-const sendlayer = new NewEmail(process.env.SENDLAYER_API_KEY);
+const sendlayer = new SendLayer(process.env.SENDLAYER_API_KEY);
+
 
 async function sendEmail() {
   try {
     // Simple email with text content
-    const simpleResponse = await sendlayer.send({
+    const simpleResponse = await sendlayer.Emails.send({
       from_email: 'sender@example.com',
       to: 'recipient@example.com',
       subject: 'Simple Test Email',
@@ -42,7 +43,7 @@ async function sendEmail() {
       ]
     }
 
-    const complexResponse = await sendlayer.send(params);
+    const complexResponse = await sendlayer.Emails.send(params);
     console.log('Complex email sent:', complexResponse);
 
   } catch (error) {

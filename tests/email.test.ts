@@ -1,13 +1,16 @@
-import { NewEmail } from '../src/email/email';
+import { SendLayer } from '../src';
 import { TEST_API_KEY, mockEmailResponse, mockAxiosInstance } from './setup';
 import { SendLayerValidationError } from '../src/exceptions';
 import * as path from 'path';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 describe('Email Client', () => {
-  let client: NewEmail;
+  let client: SendLayer;
+  let emails: any;
 
   beforeEach(() => {
-    client = new NewEmail(TEST_API_KEY);
+    client = new SendLayer(TEST_API_KEY);
+    emails = client.Emails;
     jest.clearAllMocks();
   });
 
@@ -15,7 +18,7 @@ describe('Email Client', () => {
     it('should send a simple email successfully', async () => {
       mockAxiosInstance.request.mockResolvedValue({ data: mockEmailResponse });
 
-      const response = await client.send({
+      const response = await emails.send({
         from_email: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
@@ -42,7 +45,7 @@ describe('Email Client', () => {
       mockAxiosInstance.request.mockResolvedValue({ data: mockEmailResponse });
       const testFilePath = path.join(__dirname, 'fixtures', 'test.txt');
 
-      const response = await client.send({
+      const response = await emails.send({
         from_email: 'sender@example.com',
         from_name: 'Test Sender',
         to: [
@@ -62,7 +65,10 @@ describe('Email Client', () => {
         attachments: [
           {
             path: testFilePath,
-            type: 'text/plain'
+            type: 'text/plain',
+            filename: 'custom-name.txt',
+            disposition: 'attachment',
+            contentId: 'unique-id'
           }
         ]
       });
@@ -95,9 +101,9 @@ describe('Email Client', () => {
             {
               Content: expect.any(String),
               Type: 'text/plain',
-              Filename: 'test.txt',
+              Filename: 'custom-name.txt',
               Disposition: 'attachment',
-              ContentID: expect.any(Number)
+              ContentID: 'unique-id'
             }
           ]
         }
@@ -112,7 +118,7 @@ describe('Email Client', () => {
         }
       });
 
-      await expect(client.send({
+      await expect(emails.send({
         from_email: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
@@ -121,7 +127,7 @@ describe('Email Client', () => {
     });
 
     it('should throw error for invalid sender email', async () => {
-      await expect(client.send({
+      await expect(emails.send({
         from_email: 'invalid-email',
         to: 'recipient@example.com',
         subject: 'Test Email',
@@ -130,7 +136,7 @@ describe('Email Client', () => {
     });
 
     it('should throw error for invalid recipient email (string)', async () => {
-      await expect(client.send({
+      await expect(emails.send({
         from_email: 'sender@example.com',
         to: 'invalid-email',
         subject: 'Test Email',
@@ -139,7 +145,7 @@ describe('Email Client', () => {
     });
 
     it('should throw error for invalid recipient email (object)', async () => {
-      await expect(client.send({
+      await expect(emails.send({
         from_email: 'sender@example.com',
         to: { email: 'invalid-email' },
         subject: 'Test Email',
@@ -148,7 +154,7 @@ describe('Email Client', () => {
     });
 
     it('should throw error for invalid CC email', async () => {
-      await expect(client.send({
+      await expect(emails.send({
         from_email: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
@@ -158,7 +164,7 @@ describe('Email Client', () => {
     });
 
     it('should throw error for invalid BCC email', async () => {
-      await expect(client.send({
+      await expect(emails.send({
         from_email: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
@@ -168,7 +174,7 @@ describe('Email Client', () => {
     });
 
     it('should throw error for invalid ReplyTo email', async () => {
-      await expect(client.send({
+      await expect(emails.send({
         from_email: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
@@ -178,7 +184,7 @@ describe('Email Client', () => {
     });
 
     it('should throw error for invalid attachment', async () => {
-      await expect(client.send({
+      await expect(emails.send({
         from_email: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',

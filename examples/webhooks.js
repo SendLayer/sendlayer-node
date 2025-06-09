@@ -1,26 +1,29 @@
-import { Webhooks } from 'sendlayer';
-import {config} from 'dotenv';
+import { SendLayer } from 'sendlayer';
+import { config } from 'dotenv';
 
 config();
 
-const sendlayer = new Webhooks(process.env.SENDLAYER_API_KEY);
+const sendlayer = new SendLayer(process.env.SENDLAYER_API_KEY);
+
 
 async function manageWebhooks() {
   try {
-    // Create a new webhook
-    const newWebhook = await sendlayer.create({
-      url: 'https://example.com/webhook',
-      event: 'delivery'
+    // Create a webhook
+    const webhook = await sendlayer.Webhooks.create({
+      url: 'https://your-domain.com/webhook',
+      event: 'open'
     });
-    console.log('Created webhook:', newWebhook);
+    console.log('Webhook created:', webhook);
 
     // Get all webhooks
-    const allWebhooks = await sendlayer.getAll();
-    console.log('All webhooks:', allWebhooks);
+    const allWebhooks = await sendlayer.Webhooks.get();
+    console.log('All Webhooks:', allWebhooks);
 
     // Delete a webhook
-    await sendlayer.delete(1);
-    console.log('Deleted webhook with ID: 1');
+    const webhookId = 123;
+    
+    await sendlayer.Webhooks.delete(webhookId);
+    console.log('Webhook deleted successfully');
 
   } catch (error) {
     console.error('Error managing webhooks:', error.message);

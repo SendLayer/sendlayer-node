@@ -23,20 +23,21 @@ npm install sendlayer
 ### Sending an Email
 
 ```javascript
-import { NewEmail } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 
-// Initialize the email client
-const sendlayer = new NewEmail('your-api-key');
+// Initialize the client
+const sendlayer = new SendLayer('your-api-key');
+
 
 const params = {
   from_email: 'sender@example.com',
-  to:'recipient@example.com', // or array of recipients
+  to: 'recipient@example.com', // or array of recipients
   subject: 'Test Email',
   text: 'This is a test email'
 }
 
 // Send a simple email
-const response = await sendlayer.send(params);
+const response = await sendlayer.Emails.send(params);
 
 console.log('Email sent! Message ID:', response.MessageID);
 ```
@@ -44,11 +45,12 @@ console.log('Email sent! Message ID:', response.MessageID);
 Sending Emails with additional parameters
 
 ```javascript
-import { NewEmail } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 
-sendlayer = new NewEmail('your-sendlayer-api-key')
+// Initialize the client
+const sendlayer = new SendLayer('your-sendlayer-api-key');
 
-params = {
+const params = {
   from_email: 'sender@example.com',
   from_name: 'Sender Name', // optional
   to: [
@@ -70,7 +72,7 @@ params = {
 }
 
 // Send an email with additional parameters
-const response = await sendlayer.send(params);
+const response = await sendlayer.Emails.send(params);
 
 console.log('Email Sent successfully! MessageID:', response.MessageID)
 ```
@@ -78,24 +80,24 @@ console.log('Email Sent successfully! MessageID:', response.MessageID)
 ### Events
 
 ```javascript
-import { Events } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 
-// Initialize the events client
-const sendlayer = new Events('your-api-key');
+// Initialize the client
+const sendlayer = new SendLayer('your-api-key');
+
 
 // Get all events
-const events = await sendlayer.getAll();
+const allEvents = await sendlayer.Events.get();
 
-console.log('All Events:', events);
+console.log('All Events:', allEvents);
 
 // Get events with optional filters
-
 const params = {
   startDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // optional, last 24 hours
   endDate: new Date(), // optional
   event: 'sent', // optional, filter by event type
 }
-const filteredEvents = await sendlayer.get(params);
+const filteredEvents = await sendlayer.Events.get(params);
 
 console.log('Filtered Events', filteredEvents)
 ```
@@ -103,28 +105,27 @@ console.log('Filtered Events', filteredEvents)
 ### Webhooks
 
 ```javascript
-import { Webhooks } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 
-// Initialize the webhooks client
-const sendlayer = new Webhooks('your-api-key');
+// Initialize the client
+const sendlayer = new SendLayer('your-api-key');
 
 // Create a webhook
 // Webhook event options: bounce, click, open, unsubscribe, complaint, delivery
-
 const params = {
   url: 'https://your-domain.com/webhook',
   event: 'open'
 }
 
-const webhook = await sendlayer.create(params);
+const webhook = await sendlayer.Webhooks.create(params);
 console.log('Webhook created:', webhook);
 
 // Get all webhooks
-const webhooks = await sendlayer.getAll();
-console.log('Webhooks:', webhooks);
+const allWebhooks = await sendlayer.Webhooks.get();
+console.log('Webhooks:', allWebhooks);
 
 // Delete a webhook
-await sendlayer.delete(123);
+await sendlayer.Webhooks.delete(123);
 ```
 
 ## Error Handling
@@ -138,7 +139,7 @@ The SDK throws the following error types:
 
 ```javascript
 try {
-  await sendlayer.send({
+  await sendlayer.Emails.send({
     from_email: 'sender@example.com',
     to: 'recipient@example.com',
     subject: 'Test Email'

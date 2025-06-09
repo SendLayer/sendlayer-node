@@ -6,7 +6,7 @@ import {
   SendLayerValidationError
 } from '../exceptions';
 
-export abstract class BaseClient {
+export class BaseClient {
   protected client: AxiosInstance;
 
   constructor(apiKey: string) {
@@ -51,7 +51,7 @@ export abstract class BaseClient {
     );
   }
 
-  protected async request<T>(config: any): Promise<T> {
+  public async request<T>(config: any): Promise<T> {
     try {
       const response = await this.client.request(config);
       return response.data;

@@ -94,3 +94,40 @@ export interface CreateWebhookResponse {
 export interface GetWebhooksResponse {
     Webhooks: Webhook[];
 }
+
+export enum ContentType {
+  HTML = "HTML",
+  TEXT = "Text"
+}
+
+export enum ContentDisposition {
+  ATTACHMENT = "attachment",
+  INLINE = "inline"
+}
+
+export enum ContentField {
+  HTML = "HTMLContent",
+  PLAIN = "PlainContent"
+}
+
+export enum EventType {
+  ACCEPTED = "accepted",
+  REJECTED = "rejected",
+  DELIVERED = "delivered",
+  OPENED = "opened",
+  CLICKED = "clicked",
+  UNSUBSCRIBED = "unsubscribed",
+  COMPLAINED = "complained",
+  FAILED = "failed"
+}
+
+export enum WebhookEventOptions {
+  ACCEPTED = "accepted",
+  REJECTED = "rejected",
+  DELIVERED = "delivered",
+  OPENED = "opened",
+  CLICKED = "clicked",
+  UNSUBSCRIBED = "unsubscribed",
+  COMPLAINED = "complained",
+  FAILED = "failed"
+}

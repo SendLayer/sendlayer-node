@@ -5,12 +5,22 @@ import * as path from 'path';
 import axios from 'axios';
 import { URL } from 'url';
 import { createHash } from 'crypto';
-import { EmailRecipient, EmailAttachment, EmailOptions, SendEmailResponse } from '../types';
+import { 
+  EmailRecipient, 
+  EmailAttachment, 
+  EmailOptions, 
+  SendEmailResponse,
+  ContentType,
+  ContentField,
+  ContentDisposition 
+} from '../types';
 
 
-export class NewEmail extends BaseClient {
-  constructor(apiKey: string) {
-    super(apiKey);
+export class Emails {
+  private client: BaseClient;
+
+  constructor(baseClient: BaseClient) {
+    this.client = baseClient;
   }
 
   private validateEmail(email: string): boolean {
@@ -94,6 +104,9 @@ export class NewEmail extends BaseClient {
           if (error instanceof SendLayerValidationError) {
             throw error;
           }
+          if (error instanceof Error) {
+            throw new SendLayerValidationError(`Failed to read file at ${currentPath}: ${error.message}`);
+          }
         }
       }
 
@@ -127,29 +140,35 @@ export class NewEmail extends BaseClient {
       },
       To: toList,
       Subject: options.subject,
-      ContentType: options.html ? "HTML" : "Text",
-      [options.html ? "HTMLContent" : "PlainContent"]: options.html || options.text
+      ContentType: options.html ? ContentType.HTML : ContentType.TEXT,
+      [options.html ? ContentField.HTML : ContentField.PLAIN]: options.html || options.text
     };
 
-    if (options.cc) {
-      const ccList = Array.isArray(options.cc)
-        ? options.cc.map(r => this.validateRecipient(r, "cc"))
-        : [this.validateRecipient(options.cc, "cc")];
-      payload.CC = ccList;
-    }
+    // Handle all recipient types in a loop
+    const recipientTypes = [
+      { field: 'cc' as const, payloadKey: 'CC' },
+      { field: 'bcc' as const, payloadKey: 'BCC' },
+      { field: 'replyTo' as const, payloadKey: 'ReplyTo' }
+    ];
 
-    if (options.bcc) {
-      const bccList = Array.isArray(options.bcc)
-        ? options.bcc.map(r => this.validateRecipient(r, "bcc"))
-        : [this.validateRecipient(options.bcc, "bcc")];
-      payload.BCC = bccList;
-    }
-
-    if (options.replyTo) {
-      const replyToList = Array.isArray(options.replyTo)
-        ? options.replyTo.map(r => this.validateRecipient(r, "reply_to"))
-        : [this.validateRecipient(options.replyTo, "reply_to")];
-      payload.ReplyTo = replyToList;
+    for (const { field, payloadKey } of recipientTypes) {
+      try {
+        const recipients = options[field];
+        if (recipients) {
+          const recipientList = Array.isArray(recipients)
+            ? recipients.map(r => this.validateRecipient(r, field))
+            : [this.validateRecipient(recipients, field)];
+          payload[payloadKey] = recipientList;
+        }
+      } catch (error) {
+        if (error instanceof SendLayerValidationError) {
+          throw error;
+        }
+        if (error instanceof Error) {
+          throw new SendLayerValidationError(`Error processing recipients for ${field}: ${error.message}`);
+        }
+        throw new SendLayerValidationError(`Unknown error occurred while processing recipients for ${field}`);
+      }
     }
 
     if (options.tags) {
@@ -172,7 +191,7 @@ export class NewEmail extends BaseClient {
             Content: content,
             Type: attachment.type,
             Filename: attachment.filename || path.basename(attachment.path),
-            Disposition: attachment.disposition || "attachment",
+            Disposition: attachment.disposition || ContentDisposition.ATTACHMENT,
             ContentID: attachment.contentId || parseInt(createHash('sha1').update(attachment.path).digest('hex').slice(0, 8), 16)
           };
         })
@@ -181,7 +200,7 @@ export class NewEmail extends BaseClient {
       payload.Attachments = processedAttachments;
     }
 
-    return this.request<SendEmailResponse>({
+    return this.client.request<SendEmailResponse>({
       method: 'POST',
       url: 'email',
       data: payload

@@ -1,11 +1,13 @@
 import { BaseClient } from '../base/client';
 import { SendLayerValidationError } from '../exceptions';
-import { Webhook, CreateWebhookOptions, CreateWebhookResponse, GetWebhooksResponse } from '../types';
+import { Webhook, CreateWebhookOptions, CreateWebhookResponse, GetWebhooksResponse, WebhookEventOptions } from '../types';
 
 
-export class Webhooks extends BaseClient {
-  constructor(apiKey: string) {
-    super(apiKey);
+export class Webhooks {
+  private client: BaseClient;
+
+  constructor(baseClient: BaseClient) {
+    this.client = baseClient;
   }
 
   private validateUrl(url: string): boolean {
@@ -20,12 +22,11 @@ export class Webhooks extends BaseClient {
     }
 
     // Validate event type
-    const eventOptions = ["bounce", "click", "open", "unsubscribe", "complaint", "delivery"];
-    if (!eventOptions.includes(options.event)) {
+    if (!Object.values(WebhookEventOptions).includes(options.event as WebhookEventOptions)) {
       throw new SendLayerValidationError(`Error: Invalid event name - '${options.event}' is not a valid event name`);
     }
 
-    return this.request<CreateWebhookResponse>({
+    return this.client.request<CreateWebhookResponse>({
       method: 'POST',
       url: 'webhooks',
       data: {
@@ -35,8 +36,8 @@ export class Webhooks extends BaseClient {
     });
   }
 
-  async getAll(): Promise<Webhook[]> {
-    const response = await this.request<GetWebhooksResponse>({
+  async get(): Promise<Webhook[]> {
+    const response = await this.client.request<GetWebhooksResponse>({
       method: 'GET',
       url: 'webhooks'
     });
@@ -53,7 +54,7 @@ export class Webhooks extends BaseClient {
       throw new SendLayerValidationError("WebhookID must be greater than 0");
     }
 
-    await this.request({
+    await this.client.request({
       method: 'DELETE',
       url: `webhooks/${webhookId}`
     });

@@ -123,6 +123,20 @@ export class Emails {
   }
 
   async send(options: EmailOptions): Promise<SendEmailResponse> {
+    // Validate required parameters
+    const missingFields: string[] = [];
+
+    if (!options.from_email) missingFields.push('from_email');
+    if (!options.to || (Array.isArray(options.to) && options.to.length === 0)) missingFields.push('to');
+    if (!options.subject) missingFields.push('subject');
+    if (!options.text && !options.html) missingFields.push('text or html');
+
+    if (missingFields.length > 0) {
+      throw new SendLayerValidationError(
+        `Missing required email parameter(s): ${missingFields.join(', ')}`
+      );
+    }
+
     // Validate sender first
     if (!this.validateEmail(options.from_email)) {
       throw new SendLayerValidationError(`Invalid sender email address: ${options.from_email}`);
@@ -172,6 +186,9 @@ export class Emails {
     }
 
     if (options.tags) {
+      if (!Array.isArray(options.tags) || options.tags.some(tag => typeof tag !== 'string')) {
+        throw new SendLayerValidationError('Tags must be an array of strings.');
+      }
       payload.Tags = options.tags;
     }
 

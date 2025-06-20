@@ -36,7 +36,7 @@ describe('Events Client', () => {
       const allEvents = await events.get({
         startDate,
         endDate,
-        eventType: 'delivered',
+        event: 'delivered',
         messageId: 'test-message-id'
       });
 
@@ -87,7 +87,7 @@ describe('Events Client', () => {
 
     it('should throw error for invalid event type', async () => {
       await expect(events.get({
-        eventType: 'invalid-event'
+        event: 'invalid-event'
       })).rejects.toThrow(SendLayerValidationError);
     });
 
@@ -113,7 +113,7 @@ describe('Events Client', () => {
       const params = {
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-31'),
-        eventType: 'delivered'
+        event: 'delivered'
       };
 
       const response = await events.get(params);
@@ -125,7 +125,7 @@ describe('Events Client', () => {
         params: {
           StartDate: Math.floor(params.startDate.getTime() / 1000),
           EndDate: Math.floor(params.endDate.getTime() / 1000),
-          Event: params.eventType
+          Event: params.event
         }
       });
     });

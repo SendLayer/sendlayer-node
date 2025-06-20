@@ -95,7 +95,7 @@ console.log('All Events:', allEvents);
 const params = {
   startDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // optional, last 24 hours
   endDate: new Date(), // optional
-  event: 'sent', // optional, filter by event type
+  event: 'opened', // optional, filter by event type
 }
 const filteredEvents = await sendlayer.Events.get(params);
 

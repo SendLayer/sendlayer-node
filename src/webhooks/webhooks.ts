@@ -23,7 +23,7 @@ export class Webhooks {
 
     // Validate event type
     if (!Object.values(WebhookEventOptions).includes(options.event as WebhookEventOptions)) {
-      throw new SendLayerValidationError(`Error: Invalid event name - '${options.event}' is not a valid event name`);
+      throw new SendLayerValidationError(`Error: '${options.event}' is not a valid event name Valid types are: ${Object.values(WebhookEventOptions).join(', ')}`);
     }
 
     return this.client.request<CreateWebhookResponse>({

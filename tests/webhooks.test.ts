@@ -19,7 +19,7 @@ describe('Webhooks Client', () => {
 
       const params = {
         url: 'https://example.com/webhook',
-        event: 'opened'
+        event: 'open'
       };
 
       const response = await webhooks.create(params);

@@ -29,6 +29,15 @@ export class Emails {
   }
 
   private validateRecipient(recipient: string | EmailRecipient, recipientType: string = "recipient"): EmailRecipient {
+    // Check for missing email field in recipient object
+    if (typeof recipient === 'object' && recipient !== null) {
+      if (!('email' in recipient) || typeof recipient.email !== 'string' || recipient.email.trim() === '') {
+        throw new SendLayerValidationError(
+          `Missing email field in ${recipientType} object: ${JSON.stringify(recipient)}`
+        );
+      }
+    }
+    
     if (typeof recipient === 'string') {
       if (!this.validateEmail(recipient)) {
         throw new SendLayerValidationError(`Invalid ${recipientType} email address: ${recipient}`);
@@ -64,7 +73,8 @@ export class Emails {
       // Check if the path is a URL
       if (this.isUrl(filePath)) {
         try {
-          const response = await axios.get(filePath, { responseType: 'arraybuffer', timeout: 30000 });
+          const timeout = this.client.attachmentURLTimeout ?? 30000;
+          const response = await axios.get(filePath, { responseType: 'arraybuffer', timeout });
           const content = response.data;
           
           return Buffer.from(content).toString('base64');
@@ -126,7 +136,7 @@ export class Emails {
     // Validate required parameters
     const missingFields: string[] = [];
 
-    if (!options.from_email) missingFields.push('from_email');
+    if (!options.from) missingFields.push('from');
     if (!options.to || (Array.isArray(options.to) && options.to.length === 0)) missingFields.push('to');
     if (!options.subject) missingFields.push('subject');
     if (!options.text && !options.html) missingFields.push('text or html');
@@ -137,28 +147,23 @@ export class Emails {
       );
     }
 
-    // Validate sender first
-    if (!this.validateEmail(options.from_email)) {
-      throw new SendLayerValidationError(`Invalid sender email address: ${options.from_email}`);
-    }
+    // Validate sender (from)
+    const sender = this.validateRecipient(options.from, 'from');
 
-    // Validate and process recipients
-    const toList = Array.isArray(options.to) 
-      ? options.to.map(r => this.validateRecipient(r, "recipient"))
-      : [this.validateRecipient(options.to, "recipient")];
+    // Validate and process recipients (to)
+    const toList = Array.isArray(options.to)
+      ? options.to.map(r => this.validateRecipient(r, 'recipient'))
+      : [this.validateRecipient(options.to, 'recipient')];
 
     const payload: any = {
-      From: {
-        email: options.from_email,
-        name: options?.from_name
-      },
+      From: sender,
       To: toList,
       Subject: options.subject,
       ContentType: options.html ? ContentType.HTML : ContentType.TEXT,
       [options.html ? ContentField.HTML : ContentField.PLAIN]: options.html || options.text
     };
 
-    // Handle all recipient types in a loop
+    // Handle all recipient types in a loop (cc, bcc, replyTo)
     const recipientTypes = [
       { field: 'cc' as const, payloadKey: 'CC' },
       { field: 'bcc' as const, payloadKey: 'BCC' },
@@ -169,9 +174,12 @@ export class Emails {
       try {
         const recipients = options[field];
         if (recipients) {
-          const recipientList = Array.isArray(recipients)
-            ? recipients.map(r => this.validateRecipient(r, field))
-            : [this.validateRecipient(recipients, field)];
+          let recipientList: EmailRecipient[];
+          if (Array.isArray(recipients)) {
+            recipientList = recipients.map(r => this.validateRecipient(r, field));
+          } else {
+            recipientList = [this.validateRecipient(recipients, field)];
+          }
           payload[payloadKey] = recipientList;
         }
       } catch (error) {

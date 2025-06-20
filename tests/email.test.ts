@@ -19,7 +19,7 @@ describe('Email Client', () => {
       mockAxiosInstance.request.mockResolvedValue({ data: mockEmailResponse });
 
       const response = await emails.send({
-        from_email: 'sender@example.com',
+        from: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
         text: 'Hello, this is a test email'
@@ -46,8 +46,7 @@ describe('Email Client', () => {
       const testFilePath = path.join(__dirname, 'fixtures', 'test.txt');
 
       const response = await emails.send({
-        from_email: 'sender@example.com',
-        from_name: 'Test Sender',
+        from: { email: 'sender@example.com', name: 'Test Sender' },
         to: [
           { email: 'recipient1@example.com', name: 'Recipient 1' },
           { email: 'recipient2@example.com' }
@@ -119,7 +118,7 @@ describe('Email Client', () => {
       });
 
       await expect(emails.send({
-        from_email: 'sender@example.com',
+        from: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
         text: 'Hello'
@@ -128,7 +127,7 @@ describe('Email Client', () => {
 
     it('should throw error for invalid sender email', async () => {
       await expect(emails.send({
-        from_email: 'invalid-email',
+        from: 'invalid-email',
         to: 'recipient@example.com',
         subject: 'Test Email',
         text: 'Hello'
@@ -137,7 +136,7 @@ describe('Email Client', () => {
 
     it('should throw error for invalid recipient email (string)', async () => {
       await expect(emails.send({
-        from_email: 'sender@example.com',
+        from: 'sender@example.com',
         to: 'invalid-email',
         subject: 'Test Email',
         text: 'Hello'
@@ -146,7 +145,7 @@ describe('Email Client', () => {
 
     it('should throw error for invalid recipient email (object)', async () => {
       await expect(emails.send({
-        from_email: 'sender@example.com',
+        from: 'sender@example.com',
         to: { email: 'invalid-email' },
         subject: 'Test Email',
         text: 'Hello'
@@ -155,7 +154,7 @@ describe('Email Client', () => {
 
     it('should throw error for invalid CC email', async () => {
       await expect(emails.send({
-        from_email: 'sender@example.com',
+        from: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
         text: 'Hello',
@@ -165,7 +164,7 @@ describe('Email Client', () => {
 
     it('should throw error for invalid BCC email', async () => {
       await expect(emails.send({
-        from_email: 'sender@example.com',
+        from: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
         text: 'Hello',
@@ -175,7 +174,7 @@ describe('Email Client', () => {
 
     it('should throw error for invalid ReplyTo email', async () => {
       await expect(emails.send({
-        from_email: 'sender@example.com',
+        from: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
         text: 'Hello',
@@ -185,7 +184,7 @@ describe('Email Client', () => {
 
     it('should throw error for invalid attachment', async () => {
       await expect(emails.send({
-        from_email: 'sender@example.com',
+        from: 'sender@example.com',
         to: 'recipient@example.com',
         subject: 'Test Email',
         text: 'Hello',

@@ -16,7 +16,7 @@ async function getEvents() {
     const filteredEvents = await sendlayer.Events.get({
       startDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // last 24 hours
       endDate: new Date(),
-      event: 'sent'
+      event: 'opened'
     });
     console.log('Filtered Events:', filteredEvents);
 

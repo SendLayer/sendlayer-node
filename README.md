@@ -30,7 +30,7 @@ const sendlayer = new SendLayer('your-api-key');
 
 
 const params = {
-  from_email: 'sender@example.com',
+  from: 'sender@example.com',
   to: 'recipient@example.com', // or array of recipients
   subject: 'Test Email',
   text: 'This is a test email'
@@ -51,8 +51,7 @@ import { SendLayer } from 'sendlayer';
 const sendlayer = new SendLayer('your-sendlayer-api-key');
 
 const params = {
-  from_email: 'sender@example.com',
-  from_name: 'Sender Name', // optional
+  from: {email: 'sender@example.com', name: 'Test Sender'},
   to: [
     { email: 'recipient1@example.com', name: 'Recipient 1' },
     { email: 'recipient2@example.com', name: 'Recipient 2' }
@@ -132,28 +131,23 @@ await sendlayer.Webhooks.delete(123);
 
 The SDK throws the following error types:
 
-- `SendLayerAuthenticationError`: Invalid API key
-- `SendLayerValidationError`: Invalid request parameters
 - `SendLayerAPIError`: API request failed
-- `SendLayerError`: Unexpected errors
+- `SendLayerError`: Validation errors
 
 ```javascript
 try {
   await sendlayer.Emails.send({
-    from_email: 'sender@example.com',
+    from: 'sender@example.com',
     to: 'recipient@example.com',
-    subject: 'Test Email'
+    subject: 'Test Email',
+    text: 'This is a test plain text email message'
   });
 
 } catch (error) {
-  if (error.name === 'SendLayerAuthenticationError') {
-    console.error('Invalid API key');
-  } else if (error.name === 'SendLayerValidationError') {
-    console.error('Invalid parameters:', error.message);
-  } else if (error.name === 'SendLayerAPIError') {
+  if (error.name === 'SendLayerAPIError') {
     console.error('API error:', error.message);
   } else {
-    console.error('Unexpected error:', error.message);
+    console.error('Error:', error.message);
   }
 }
 ```

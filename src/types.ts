@@ -12,15 +12,14 @@ export interface EmailAttachment {
 }
 
 export interface EmailOptions {
-    from_email: string;
-    from_name?: string;
+    from: string | EmailRecipient;
     to: string | EmailRecipient | EmailRecipient[];
     subject: string;
+    text: string;
     html?: string;
-    text?: string;
-    cc?: EmailRecipient | EmailRecipient[];
-    bcc?: EmailRecipient | EmailRecipient[];
-    replyTo?: EmailRecipient | EmailRecipient[];
+    cc?: string | EmailRecipient | EmailRecipient[];
+    bcc?: string | EmailRecipient | EmailRecipient[];
+    replyTo?: string | EmailRecipient | EmailRecipient[];
     tags?: string[];
     attachments?: EmailAttachment[];
     headers?: Record<string, string>;

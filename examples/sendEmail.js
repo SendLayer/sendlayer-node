@@ -10,7 +10,7 @@ async function sendEmail() {
   try {
     // Simple email with text content
     const simpleResponse = await sendlayer.Emails.send({
-      from_email: 'sender@example.com',
+      from: 'sender@example.com',
       to: 'recipient@example.com',
       subject: 'Simple Test Email',
       text: 'Hello, this is a simple test email'
@@ -19,8 +19,7 @@ async function sendEmail() {
 
     // Complex email with HTML content and all options
     const params = {
-      from_email: 'sender@example.com',
-      from_name: 'Test Sender',
+      from: {email: 'sender@example.com', name: 'Test Sender'},
       to: [
         { email: 'recipient1@example.com', name: 'Recipient 1' },
         { email: 'recipient2@example.com' }

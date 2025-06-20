@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import {
   SendLayerError,
   SendLayerAPIError,
@@ -6,17 +6,26 @@ import {
   SendLayerValidationError
 } from '../exceptions';
 
+// Add ClientConfig type
+export type ClientConfig = {
+  axios?: AxiosRequestConfig;
+  attachmentURLTimeout?: number;
+};
+
 export class BaseClient {
   protected client: AxiosInstance;
+  public attachmentURLTimeout: number;
 
-  constructor(apiKey: string) {
-    this.client = axios.create({
+  constructor(apiKey: string, config: ClientConfig = {}) {
+    const defaultAxiosConfig: AxiosRequestConfig = {
       baseURL: 'https://console.sendlayer.com/api/v1/',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       }
-    });
+    };
+    this.client = axios.create({ ...defaultAxiosConfig, ...(config.axios || {}) });
+    this.attachmentURLTimeout = config.attachmentURLTimeout ?? 30000;
 
     // Add response interceptor for error handling
     this.client.interceptors.response.use(

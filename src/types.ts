@@ -63,7 +63,7 @@ export interface Event {
 export interface GetEventsOptions {
     startDate?: Date;
     endDate?: Date;
-    eventType?: string;
+    event?: string;
     fromEmail?: string;
     toEmail?: string;
     messageId?: string;
@@ -122,12 +122,10 @@ export enum EventType {
 }
 
 export enum WebhookEventOptions {
-  ACCEPTED = "accepted",
-  REJECTED = "rejected",
-  DELIVERED = "delivered",
-  OPENED = "opened",
-  CLICKED = "clicked",
-  UNSUBSCRIBED = "unsubscribed",
-  COMPLAINED = "complained",
-  FAILED = "failed"
+  BOUNCE = "bounce",
+  DELIVERY = "delivery",
+  OPEN = "open",
+  CLICK = "click",
+  UNSUBSCRIBE = "unsubscribe",
+  COMPLAINT = "complaint",
 }

@@ -25,8 +25,8 @@ export class Events {
     }
 
     // Validate event type
-    if (options.eventType && !Object.values(EventType).includes(options.eventType as EventType)) {
-      throw new SendLayerValidationError(`Invalid event type: '${options.eventType}'. Valid types are: ${Object.values(EventType).join(', ')}`);
+    if (options.event && !Object.values(EventType).includes(options.event as EventType)) {
+      throw new SendLayerValidationError(`Invalid event type: '${options.event}'. Valid types are: ${Object.values(EventType).join(', ')}`);
     }
 
     // Validate retrieve count
@@ -39,7 +39,7 @@ export class Events {
     const params: Record<string, any> = {
       ...(options.startDate && { StartDate: Math.floor(options.startDate.getTime() / 1000) }),
       ...(options.endDate && { EndDate: Math.floor(options.endDate.getTime() / 1000) }),
-      ...(options.eventType && { Event: options.eventType }),
+      ...(options.event && { Event: options.event }),
       ...(options.messageId && { MessageId: options.messageId }),
       ...(options.retrieveCount && { RetrieveCount: options.retrieveCount }),
     };

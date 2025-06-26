@@ -152,18 +152,10 @@ try {
 }
 ```
 
-## Development
 
-```bash
-# Install dependencies
-npm install
+## More Details
+To learn more about using the SendLayer SDK, be sure to check our [Developer Documentation](https://developers.sendlayer.com/sdks/nodejs).
 
-# Run tests
-npm test
-
-# Build the SDK
-npm run build
-```
 
 ## License
 

@@ -152,8 +152,10 @@ try {
 }
 ```
 
+
 ## More Details
 To learn more about using the SendLayer SDK, be sure to check our [Developer Documentation](https://developers.sendlayer.com/sdks/nodejs).
+
 
 ## License
 

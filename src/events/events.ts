@@ -1,18 +1,16 @@
 import { BaseClient } from '../base/client';
 import { SendLayerValidationError } from '../exceptions';
-import { GetEventsOptions, GetEventsResponse, Message, MessageHeaders, Event } from '../types';
+import { GetEventsOptions, GetEventsResponse, Message, MessageHeaders, Event, EventType } from '../types';
 
 
-export class Events extends BaseClient {
-  constructor(apiKey: string) {
-    super(apiKey);
+export class Events {
+  private client: BaseClient;
+
+  constructor(baseClient: BaseClient) {
+    this.client = baseClient;
   }
 
-  async getAll(options: GetEventsOptions = {}): Promise<GetEventsResponse> {
-    const validEventTypes = [
-      "accepted", "rejected", "delivered", "opened", 
-      "clicked", "unsubscribed", "complained", "failed"
-    ];
+  async get(options: GetEventsOptions = {}): Promise<GetEventsResponse> {
 
     // Validate date range
     if (options.startDate && options.endDate) {
@@ -27,8 +25,8 @@ export class Events extends BaseClient {
     }
 
     // Validate event type
-    if (options.eventType && !validEventTypes.includes(options.eventType)) {
-      throw new SendLayerValidationError(`Invalid event type: '${options.eventType}'. Valid types are: ${validEventTypes.join(', ')}`);
+    if (options.event && !Object.values(EventType).includes(options.event as EventType)) {
+      throw new SendLayerValidationError(`Invalid event type: '${options.event}'. Valid types are: ${Object.values(EventType).join(', ')}`);
     }
 
     // Validate retrieve count
@@ -41,12 +39,12 @@ export class Events extends BaseClient {
     const params: Record<string, any> = {
       ...(options.startDate && { StartDate: Math.floor(options.startDate.getTime() / 1000) }),
       ...(options.endDate && { EndDate: Math.floor(options.endDate.getTime() / 1000) }),
-      ...(options.eventType && { Event: options.eventType }),
+      ...(options.event && { Event: options.event }),
       ...(options.messageId && { MessageId: options.messageId }),
       ...(options.retrieveCount && { RetrieveCount: options.retrieveCount }),
     };
 
-    const response = await this.request<GetEventsResponse>({
+    const response = await this.client.request<GetEventsResponse>({
       method: 'GET',
       url: 'events',
       params

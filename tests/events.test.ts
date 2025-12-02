@@ -1,22 +1,25 @@
-import { Events } from '../src/events/events';
+import { SendLayer } from '../src';
 import { TEST_API_KEY, mockEventsResponse, mockAxiosInstance } from './setup';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { SendLayerValidationError } from '../src/exceptions';
 
 describe('Events Client', () => {
-  let client: Events;
+  let client: SendLayer;
+  let events: any;
 
   beforeEach(() => {
-    client = new Events(TEST_API_KEY);
+    client = new SendLayer(TEST_API_KEY);
+    events = client.Events;
     jest.clearAllMocks();
   });
 
-  describe('getAll', () => {
-    it('should retrieve events successfully', async () => {
+  describe('get', () => {
+    it('should get all events successfully', async () => {
       mockAxiosInstance.request.mockResolvedValue({ data: mockEventsResponse });
 
-      const events = await client.getAll();
+      const response = await events.get();
 
-      expect(events).toEqual(mockEventsResponse);
+      expect(response).toEqual(mockEventsResponse);
       expect(mockAxiosInstance.request).toHaveBeenCalledWith({
         method: 'GET',
         url: 'events',
@@ -30,14 +33,14 @@ describe('Events Client', () => {
       const startDate = new Date('2023-01-01');
       const endDate = new Date('2023-12-31');
 
-      const events = await client.getAll({
+      const allEvents = await events.get({
         startDate,
         endDate,
-        eventType: 'delivered',
+        event: 'delivered',
         messageId: 'test-message-id'
       });
 
-      expect(events).toEqual(mockEventsResponse);
+      expect(allEvents).toEqual(mockEventsResponse);
       expect(mockAxiosInstance.request).toHaveBeenCalledWith({
         method: 'GET',
         url: 'events',
@@ -58,14 +61,14 @@ describe('Events Client', () => {
         }
       });
 
-      await expect(client.getAll()).rejects.toThrow('Invalid API key');
+      await expect(events.get()).rejects.toThrow('Invalid API key');
     });
 
     it('should throw error for invalid date range', async () => {
       const startDate = new Date('2023-12-31');
       const endDate = new Date('2023-01-01');
 
-      await expect(client.getAll({
+      await expect(events.get({
         startDate,
         endDate
       })).rejects.toThrow(SendLayerValidationError);
@@ -76,30 +79,55 @@ describe('Events Client', () => {
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + 1);
 
-      await expect(client.getAll({
+      await expect(events.get({
         startDate,
         endDate
       })).rejects.toThrow(SendLayerValidationError);
     });
 
     it('should throw error for invalid event type', async () => {
-      await expect(client.getAll({
-        eventType: 'invalid-event'
+      await expect(events.get({
+        event: 'invalid-event'
       })).rejects.toThrow(SendLayerValidationError);
     });
 
     it('should throw error for invalid retrieve count', async () => {
-      await expect(client.getAll({
+      await expect(events.get({
         retrieveCount: 0
       })).rejects.toThrow(SendLayerValidationError);
 
-      await expect(client.getAll({
+      await expect(events.get({
         retrieveCount: 101
       })).rejects.toThrow(SendLayerValidationError);
 
-      await expect(client.getAll({
+      await expect(events.get({
         retrieveCount: -1
       })).rejects.toThrow(SendLayerValidationError);
+    });
+  });
+
+  describe('get', () => {
+    it('should get filtered events successfully', async () => {
+      mockAxiosInstance.request.mockResolvedValue({ data: mockEventsResponse });
+
+      const params = {
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-31'),
+        event: 'delivered'
+      };
+
+      const response = await events.get(params);
+
+      expect(response).toEqual(mockEventsResponse);
+      expect(mockAxiosInstance.request).toHaveBeenCalledWith({
+        method: 'GET',
+        url: 'events',
+        params: {
+          StartDate: Math.floor(params.startDate.getTime() / 1000),
+          EndDate: Math.floor(params.endDate.getTime() / 1000),
+          Event: params.event
+        }
+      });
     });
   });
 }); 

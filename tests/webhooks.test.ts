@@ -1,61 +1,63 @@
-import { Webhooks } from '../src/webhooks/webhooks';
+import { SendLayer } from '../src';
 import { TEST_API_KEY, mockWebhookResponse, mockAxiosInstance } from './setup';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { SendLayerValidationError } from '../src/exceptions';
 
 describe('Webhooks Client', () => {
-  let client: Webhooks;
+  let client: SendLayer;
+  let webhooks: any;
 
   beforeEach(() => {
-    client = new Webhooks(TEST_API_KEY);
+    client = new SendLayer(TEST_API_KEY);
+    webhooks = client.Webhooks;
     jest.clearAllMocks();
   });
 
   describe('create', () => {
     it('should create a webhook successfully', async () => {
-      const mockResponse = { NewWebhookID: 123 };
-      mockAxiosInstance.request.mockResolvedValue({ data: mockResponse });
+      mockAxiosInstance.request.mockResolvedValue({ data: mockWebhookResponse });
 
-      const webhookData = {
+      const params = {
         url: 'https://example.com/webhook',
-        event: 'delivery'
+        event: 'open'
       };
 
-      const response = await client.create(webhookData);
+      const response = await webhooks.create(params);
 
-      expect(response).toEqual(mockResponse);
+      expect(response).toEqual(mockWebhookResponse);
       expect(mockAxiosInstance.request).toHaveBeenCalledWith({
         method: 'POST',
         url: 'webhooks',
         data: {
-          WebhookURL: 'https://example.com/webhook',
-          Event: 'delivery'
+          Event: params.event,
+          WebhookURL: params.url
         }
       });
     });
 
     it('should throw error for invalid URL', async () => {
-      await expect(client.create({
+      await expect(webhooks.create({
         url: 'invalid-url',
         event: 'sent'
       })).rejects.toThrow(SendLayerValidationError);
     });
 
     it('should throw error for invalid event type', async () => {
-      await expect(client.create({
+      await expect(webhooks.create({
         url: 'https://example.com/webhook',
         event: 'invalid-event'
       })).rejects.toThrow(SendLayerValidationError);
     });
   });
 
-  describe('getAll', () => {
-    it('should retrieve all webhooks successfully', async () => {
-      const mockResponse = { Webhooks: [{ WebhookID: "1", WebhookURL: 'https://example.com/webhook', Event: 'delivery', Status: 'active' }] };
+  describe('get', () => {
+    it('should get all webhooks successfully', async () => {
+      const mockResponse = { Webhooks: [mockWebhookResponse] };
       mockAxiosInstance.request.mockResolvedValue({ data: mockResponse });
 
-      const webhooks = await client.getAll();
+      const response = await webhooks.get();
 
-      expect(webhooks).toEqual(mockResponse.Webhooks);
+      expect(response).toEqual([mockWebhookResponse]);
       expect(mockAxiosInstance.request).toHaveBeenCalledWith({
         method: 'GET',
         url: 'webhooks'
@@ -65,18 +67,19 @@ describe('Webhooks Client', () => {
 
   describe('delete', () => {
     it('should delete a webhook successfully', async () => {
-      mockAxiosInstance.request.mockResolvedValue({ data: {} });
+      mockAxiosInstance.request.mockResolvedValue({ data: { success: true } });
 
-      await client.delete(123);
+      const webhookId = 123;
+      await webhooks.delete(webhookId);
 
       expect(mockAxiosInstance.request).toHaveBeenCalledWith({
         method: 'DELETE',
-        url: 'webhooks/123'
+        url: `webhooks/${webhookId}`
       });
     });
 
     it('should throw error for invalid webhook ID', async () => {
-      await expect(client.delete(0)).rejects.toThrow(SendLayerValidationError);
+      await expect(webhooks.delete(0)).rejects.toThrow(SendLayerValidationError);
     });
   });
 }); 

@@ -23,20 +23,21 @@ npm install sendlayer
 ### Sending an Email
 
 ```javascript
-import { NewEmail } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 
-// Initialize the email client
-const sendlayer = new NewEmail('your-api-key');
+// Initialize the client
+const sendlayer = new SendLayer('your-api-key');
+
 
 const params = {
-  from_email: 'sender@example.com',
-  to:'recipient@example.com', // or array of recipients
+  from: 'sender@example.com',
+  to: 'recipient@example.com', // or array of recipients
   subject: 'Test Email',
   text: 'This is a test email'
 }
 
 // Send a simple email
-const response = await sendlayer.send(params);
+const response = await sendlayer.Emails.send(params);
 
 console.log('Email sent! Message ID:', response.MessageID);
 ```
@@ -44,13 +45,13 @@ console.log('Email sent! Message ID:', response.MessageID);
 Sending Emails with additional parameters
 
 ```javascript
-import { NewEmail } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 
-sendlayer = new NewEmail('your-sendlayer-api-key')
+// Initialize the client
+const sendlayer = new SendLayer('your-sendlayer-api-key');
 
-params = {
-  from_email: 'sender@example.com',
-  from_name: 'Sender Name', // optional
+const params = {
+  from: {email: 'sender@example.com', name: 'Test Sender'},
   to: [
     { email: 'recipient1@example.com', name: 'Recipient 1' },
     { email: 'recipient2@example.com', name: 'Recipient 2' }
@@ -70,7 +71,7 @@ params = {
 }
 
 // Send an email with additional parameters
-const response = await sendlayer.send(params);
+const response = await sendlayer.Emails.send(params);
 
 console.log('Email Sent successfully! MessageID:', response.MessageID)
 ```
@@ -78,24 +79,24 @@ console.log('Email Sent successfully! MessageID:', response.MessageID)
 ### Events
 
 ```javascript
-import { Events } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 
-// Initialize the events client
-const sendlayer = new Events('your-api-key');
+// Initialize the client
+const sendlayer = new SendLayer('your-api-key');
+
 
 // Get all events
-const events = await sendlayer.getAll();
+const allEvents = await sendlayer.Events.get();
 
-console.log('All Events:', events);
+console.log('All Events:', allEvents);
 
 // Get events with optional filters
-
 const params = {
   startDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // optional, last 24 hours
   endDate: new Date(), // optional
-  event: 'sent', // optional, filter by event type
+  event: 'opened', // optional, filter by event type
 }
-const filteredEvents = await sendlayer.get(params);
+const filteredEvents = await sendlayer.Events.get(params);
 
 console.log('Filtered Events', filteredEvents)
 ```
@@ -103,72 +104,58 @@ console.log('Filtered Events', filteredEvents)
 ### Webhooks
 
 ```javascript
-import { Webhooks } from 'sendlayer';
+import { SendLayer } from 'sendlayer';
 
-// Initialize the webhooks client
-const sendlayer = new Webhooks('your-api-key');
+// Initialize the client
+const sendlayer = new SendLayer('your-api-key');
 
 // Create a webhook
 // Webhook event options: bounce, click, open, unsubscribe, complaint, delivery
-
 const params = {
   url: 'https://your-domain.com/webhook',
   event: 'open'
 }
 
-const webhook = await sendlayer.create(params);
+const webhook = await sendlayer.Webhooks.create(params);
 console.log('Webhook created:', webhook);
 
 // Get all webhooks
-const webhooks = await sendlayer.getAll();
-console.log('Webhooks:', webhooks);
+const allWebhooks = await sendlayer.Webhooks.get();
+console.log('Webhooks:', allWebhooks);
 
 // Delete a webhook
-await sendlayer.delete(123);
+await sendlayer.Webhooks.delete(123);
 ```
 
 ## Error Handling
 
 The SDK throws the following error types:
 
-- `SendLayerAuthenticationError`: Invalid API key
-- `SendLayerValidationError`: Invalid request parameters
 - `SendLayerAPIError`: API request failed
-- `SendLayerError`: Unexpected errors
+- `SendLayerError`: Validation errors
 
 ```javascript
 try {
-  await sendlayer.send({
-    from_email: 'sender@example.com',
+  await sendlayer.Emails.send({
+    from: 'sender@example.com',
     to: 'recipient@example.com',
-    subject: 'Test Email'
+    subject: 'Test Email',
+    text: 'This is a test plain text email message'
   });
 
 } catch (error) {
-  if (error.name === 'SendLayerAuthenticationError') {
-    console.error('Invalid API key');
-  } else if (error.name === 'SendLayerValidationError') {
-    console.error('Invalid parameters:', error.message);
-  } else if (error.name === 'SendLayerAPIError') {
+  if (error.name === 'SendLayerAPIError') {
     console.error('API error:', error.message);
   } else {
-    console.error('Unexpected error:', error.message);
+    console.error('Error:', error.message);
   }
 }
 ```
 
-## Development
 
-```bash
-# Install dependencies
-npm install
+## More Details
+To learn more about using the SendLayer SDK, be sure to check our [Developer Documentation](https://developers.sendlayer.com/sdks/nodejs).
 
-# Run tests
-npm test
-
-# Build the SDK
-npm run build
-```
 
 ## License
 

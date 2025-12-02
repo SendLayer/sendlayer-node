@@ -12,15 +12,14 @@ export interface EmailAttachment {
 }
 
 export interface EmailOptions {
-    from_email: string;
-    from_name?: string;
+    from: string | EmailRecipient;
     to: string | EmailRecipient | EmailRecipient[];
     subject: string;
+    text: string;
     html?: string;
-    text?: string;
-    cc?: EmailRecipient | EmailRecipient[];
-    bcc?: EmailRecipient | EmailRecipient[];
-    replyTo?: EmailRecipient | EmailRecipient[];
+    cc?: string | EmailRecipient | EmailRecipient[];
+    bcc?: string | EmailRecipient | EmailRecipient[];
+    replyTo?: string | EmailRecipient | EmailRecipient[];
     tags?: string[];
     attachments?: EmailAttachment[];
     headers?: Record<string, string>;
@@ -63,7 +62,7 @@ export interface Event {
 export interface GetEventsOptions {
     startDate?: Date;
     endDate?: Date;
-    eventType?: string;
+    event?: string;
     fromEmail?: string;
     toEmail?: string;
     messageId?: string;
@@ -93,4 +92,39 @@ export interface CreateWebhookResponse {
   
 export interface GetWebhooksResponse {
     Webhooks: Webhook[];
+}
+
+export enum ContentType {
+  HTML = "HTML",
+  TEXT = "Text"
+}
+
+export enum ContentDisposition {
+  ATTACHMENT = "attachment",
+  INLINE = "inline"
+}
+
+export enum ContentField {
+  HTML = "HTMLContent",
+  PLAIN = "PlainContent"
+}
+
+export enum EventType {
+  ACCEPTED = "accepted",
+  REJECTED = "rejected",
+  DELIVERED = "delivered",
+  OPENED = "opened",
+  CLICKED = "clicked",
+  UNSUBSCRIBED = "unsubscribed",
+  COMPLAINED = "complained",
+  FAILED = "failed"
+}
+
+export enum WebhookEventOptions {
+  BOUNCE = "bounce",
+  DELIVERY = "delivery",
+  OPEN = "open",
+  CLICK = "click",
+  UNSUBSCRIBE = "unsubscribe",
+  COMPLAINT = "complaint",
 }

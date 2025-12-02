@@ -1,24 +1,24 @@
-import { Events } from 'sendlayer';
-import {config} from 'dotenv';
+import { SendLayer } from 'sendlayer';
+import { config } from 'dotenv';
 
 config();
 
-const sendlayer = new Events(process.env.SENDLAYER_API_KEY);
+const sendlayer = new SendLayer(process.env.SENDLAYER_API_KEY);
+
 
 async function getEvents() {
   try {
     // Get all events
-    const allEvents = await sendlayer.getAll();
-    console.log('All events:', allEvents);
+    const allEvents = await sendlayer.Events.get();
+    console.log('All Events:', allEvents);
 
     // Get events with filters
-    const filteredEvents = await sendlayer.getAll({
-      eventType: 'bounce',
-      startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
+    const filteredEvents = await sendlayer.Events.get({
+      startDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // last 24 hours
       endDate: new Date(),
-      retrieveCount: 10
+      event: 'opened'
     });
-    console.log('Filtered events:', filteredEvents);
+    console.log('Filtered Events:', filteredEvents);
 
   } catch (error) {
     console.error('Error getting events:', error.message);

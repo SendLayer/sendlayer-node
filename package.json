@@ -1,6 +1,6 @@
 {
     "name": "sendlayer",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "SendLayer JavaScript SDK",
     "main": "./dist/index.js",
     "files": [
@@ -9,7 +9,7 @@
     "directories": {
         "dist": "./dist"
     },
-    "types": "./dist/types/index.d.ts",
+    "types": "./dist/types.d.ts",
     "sideEffects": false,
     "scripts": {
         "clean": "rm -rf dist",

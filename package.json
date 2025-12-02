@@ -40,7 +40,16 @@
         "sendlayer api typescript",
         "sendlayer api nodejs"
     ],
-    "author": "",
+    "author": {
+        "name": "SendLayer",
+        "email": "support@sendlayer.com"
+    },
+    "contributors": [
+        {
+            "name": "David Ozokoye",
+            "url": "https://github.com/gyrationtechs"
+        }
+    ],
     "license": "MIT",
     "devDependencies": {
         "@types/jest": "^29.5.14",

@@ -10,7 +10,8 @@
 
 The official JavaScript SDK for interacting with the SendLayer API, providing a simple and intuitive interface for sending emails, managing webhooks, and retrieving email events. Supports both CommonJS and ES Modules.
 
-[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE) ![NPM Version](https://img.shields.io/npm/v/sendlayer) [![Publish to npm Registry](https://github.com/SendLayer/sendlayer-node/actions/workflows/publish.yaml/badge.svg)](https://github.com/SendLayer/sendlayer-node/actions/workflows/publish.yaml)
+
 
 ## Installation
 

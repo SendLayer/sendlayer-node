@@ -1,4 +1,4 @@
-name: Publish to npm Registry
+name: Test and Publish
 
 on:
   push:

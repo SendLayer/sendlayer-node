@@ -1,6 +1,6 @@
 {
     "name": "sendlayer",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "SendLayer JavaScript SDK",
     "main": "./dist/index.js",
     "files": [
@@ -9,7 +9,7 @@
     "directories": {
         "dist": "./dist"
     },
-    "types": "./dist/types.d.ts",
+    "types": "./dist",
     "sideEffects": false,
     "scripts": {
         "clean": "rm -rf dist",
@@ -22,23 +22,15 @@
     "keywords": [
         "sendlayer",
         "email",
-        "api",
-        "sdk",
-        "typescript",
-        "nodejs",
         "send email",
         "send email api",
         "send email sdk",
         "send email typescript",
         "send email nodejs",
-        "send email api typescript",
-        "send email api nodejs",
         "sendlayer sdk",
         "sendlayer api",
         "sendlayer typescript",
-        "sendlayer nodejs",
-        "sendlayer api typescript",
-        "sendlayer api nodejs"
+        "sendlayer nodejs"
     ],
     "author": {
         "name": "SendLayer",

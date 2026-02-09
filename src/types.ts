@@ -15,7 +15,7 @@ export interface EmailOptions {
     from: string | EmailRecipient;
     to: string | EmailRecipient | EmailRecipient[];
     subject: string;
-    text: string;
+    text?: string;
     html?: string;
     cc?: string | EmailRecipient | EmailRecipient[];
     bcc?: string | EmailRecipient | EmailRecipient[];

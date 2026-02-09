@@ -1,6 +1,6 @@
 {
     "name": "sendlayer",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "SendLayer JavaScript SDK",
     "main": "./dist/index.js",
     "files": [

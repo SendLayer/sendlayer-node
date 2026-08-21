@@ -155,13 +155,26 @@ export class Emails {
       ? options.to.map(r => this.validateRecipient(r, 'recipient'))
       : [this.validateRecipient(options.to, 'recipient')];
 
+    // Both parts are sent when both are supplied. A single computed key could
+    // only ever emit one of them, which silently dropped the plain-text part.
+    const hasHtml = Boolean(options.html);
+    const hasText = Boolean(options.text);
+
     const payload: any = {
       From: sender,
       To: toList,
       Subject: options.subject,
-      ContentType: options.html ? ContentType.HTML : ContentType.TEXT,
-      [options.html ? ContentField.HTML : ContentField.PLAIN]: options.html || options.text
+      // HTML wins for the declared content type whenever an HTML body is present.
+      ContentType: hasHtml ? ContentType.HTML : ContentType.TEXT
     };
+
+    if (hasHtml) {
+      payload[ContentField.HTML] = options.html;
+    }
+
+    if (hasText) {
+      payload[ContentField.PLAIN] = options.text;
+    }
 
     // Handle all recipient types in a loop (cc, bcc, replyTo)
     const recipientTypes = [

@@ -22,16 +22,8 @@
   },
   "keywords": [
     "sendlayer",
-    "email",
-    "send email",
-    "send email api",
-    "send email sdk",
-    "send email typescript",
-    "send email nodejs",
-    "sendlayer sdk",
-    "sendlayer api",
-    "sendlayer typescript",
-    "sendlayer nodejs"
+    "email api",
+    "send email nodejs"
   ],
   "author": {
     "name": "SendLayer",

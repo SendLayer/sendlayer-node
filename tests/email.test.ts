@@ -198,3 +198,62 @@ describe('Email Client', () => {
     });
   });
 }); 
+describe('content parts', () => {
+  let client: SendLayer;
+  let emails: any;
+
+  beforeEach(() => {
+    client = new SendLayer(TEST_API_KEY);
+    emails = client.Emails;
+    jest.clearAllMocks();
+  });
+
+  it('sends both HTML and plain-text parts when both are supplied', async () => {
+    mockAxiosInstance.request.mockResolvedValue({ data: mockEmailResponse });
+
+    await emails.send({
+      from: 'sender@example.com',
+      to: 'recipient@example.com',
+      subject: 'Test Email',
+      text: 'plain text fallback',
+      html: '<p>html body</p>'
+    });
+
+    const sent = (mockAxiosInstance.request as any).mock.calls[0][0].data;
+    expect(sent.HTMLContent).toBe('<p>html body</p>');
+    expect(sent.PlainContent).toBe('plain text fallback');
+    expect(sent.ContentType).toBe('HTML');
+  });
+
+  it('sends only PlainContent when given text alone', async () => {
+    mockAxiosInstance.request.mockResolvedValue({ data: mockEmailResponse });
+
+    await emails.send({
+      from: 'sender@example.com',
+      to: 'recipient@example.com',
+      subject: 'Test Email',
+      text: 'text body'
+    });
+
+    const sent = (mockAxiosInstance.request as any).mock.calls[0][0].data;
+    expect(sent.ContentType).toBe('Text');
+    expect(sent.PlainContent).toBe('text body');
+    expect(sent.HTMLContent).toBeUndefined();
+  });
+
+  it('sends only HTMLContent when given html alone', async () => {
+    mockAxiosInstance.request.mockResolvedValue({ data: mockEmailResponse });
+
+    await emails.send({
+      from: 'sender@example.com',
+      to: 'recipient@example.com',
+      subject: 'Test Email',
+      html: '<p>html body</p>'
+    });
+
+    const sent = (mockAxiosInstance.request as any).mock.calls[0][0].data;
+    expect(sent.ContentType).toBe('HTML');
+    expect(sent.HTMLContent).toBe('<p>html body</p>');
+    expect(sent.PlainContent).toBeUndefined();
+  });
+});
